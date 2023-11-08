@@ -46,6 +46,7 @@ class StripeController extends Controller
     private function createCheckoutSession(array $lineItems): \Stripe\Checkout\Session
     {
         return $this->stripe->checkout->sessions->create([
+            'customer' => $this->createCustomer()->id,
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => route('payment.success', [], true),
@@ -72,5 +73,17 @@ class StripeController extends Controller
         }
 
         return $lineItems;
+    }
+
+    private function createCustomer(): \Stripe\Customer
+    {
+        $randomUserId = random_int(1, 10);
+
+        $user = \App\Models\User::where('id', $randomUserId)->first();
+
+        return $this->stripe->customers->create([
+            'email' => $user->email,
+            'name' => $user->name,
+        ]);
     }
 }
