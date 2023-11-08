@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Payment\StripeController;
+use App\Http\Controllers\StripLaravelController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('checkout', [StripeController::class,'overview'])->name('payment.checkout');
+Route::post('checkout', [StripeController::class,'checkout'])->name('payment.checkout');
+Route::get('success', [StripeController::class,'success'])->name('payment.success');
+Route::get('cancel', [StripeController::class,'cancel'])->name('payment.cancel');
