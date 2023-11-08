@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Stripe\StripeClient;
 
@@ -31,10 +32,19 @@ class StripeController extends Controller
         return redirect($checkout_session->url);
     }
 
-    public function success()
+    public function success(Request $request)
     {
-        echo "Payment success";
-        exit;
+        try {
+            $session = $this->stripe->checkout->sessions->retrieve($request->get('session_id'));
+
+            $customer = $this->stripe->customers->retrieve($session->customer);
+
+            return view('stripe.success', compact('customer'));
+
+        } catch (Error $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 
     public function cancel()
@@ -49,7 +59,7 @@ class StripeController extends Controller
             'customer' => $this->createCustomer()->id,
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => route('payment.success', [], true),
+            'success_url' => route('payment.success', [], true) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('payment.cancel', [], true),
         ]);
     }
