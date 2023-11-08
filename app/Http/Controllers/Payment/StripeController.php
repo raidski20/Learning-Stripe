@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
+use Illuminate\View\View;
 use Stripe\StripeClient;
 
 class StripeController extends Controller
@@ -17,14 +17,45 @@ class StripeController extends Controller
         $this->stripe = new StripeClient($this->stripSK);
     }
 
-    public function overview()
+    public function overview(): View
     {
         return view('stripe.checkout');
     }
 
     public function checkout()
     {
-        $products = Product::all();
+        $lineItems = $this->getLineItems();
+
+        $checkout_session = $this->createCheckoutSession($lineItems);
+
+        return redirect($checkout_session->url);
+    }
+
+    public function success()
+    {
+        echo "Payment success";
+        exit;
+    }
+
+    public function cancel()
+    {
+        return "Payment canceled";
+        exit;
+    }
+
+    private function createCheckoutSession(array $lineItems): \Stripe\Checkout\Session
+    {
+        return $this->stripe->checkout->sessions->create([
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => route('payment.success', [], true),
+            'cancel_url' => route('payment.cancel', [], true),
+        ]);
+    }
+
+    private function getLineItems(): array
+    {
+        $products = \App\Models\Product::all();
         $lineItems = [];
 
         foreach ($products as $product) {
@@ -40,25 +71,6 @@ class StripeController extends Controller
             ];
         }
 
-        $checkout_session = $this->stripe->checkout->sessions->create([
-            'line_items' => $lineItems,
-            'mode' => 'payment',
-            'success_url' => route('payment.success', [], true),
-            'cancel_url' => route('payment.cancel', [], true),
-        ]);
-
-        return redirect($checkout_session->url);
-    }
-
-    public function success()
-    {
-        echo "Payment success";
-        exit;
-    }
-
-    public function cancel()
-    {
-        return "Payment canceled";
-        exit;
+        return $lineItems;
     }
 }
