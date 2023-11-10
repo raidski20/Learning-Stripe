@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    const EURO_CURRENCY = 'euro';
+    const EURO_CURRENCY = 'eur';
     const US_DOLLAR_CURRENCY = 'usd';
 
     public const CURRENCIES_MAP = [
@@ -20,6 +20,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'price',
-        'currency'
+        'currency',
+        'stripe_price'
     ];
 }

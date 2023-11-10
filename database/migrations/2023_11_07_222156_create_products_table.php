@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('currency', array_keys(Product::CURRENCIES_MAP))
                 ->default(Product::US_DOLLAR_CURRENCY);
 
+            $table->string('stripe_price');
+
             $table->timestamps();
         });
     }
