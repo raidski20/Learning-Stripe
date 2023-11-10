@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Payment\StripeController;
+use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\StripLaravelController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +25,14 @@ Route::get('checkout', [StripeController::class,'overview'])->name('payment.chec
 Route::post('checkout', [StripeController::class,'checkout'])->name('payment.checkout');
 Route::get('success', [StripeController::class,'success'])->name('payment.success');
 Route::get('cancel', [StripeController::class,'cancel'])->name('payment.cancel');
+
+Route::group([
+    'prefix' => 'products',
+    'controller' => ProductController::class ,
+        'as' => 'products.'
+    ], function () {
+
+    Route::get('/','index')->name('index');
+    Route::get('create','create')->name('create');
+    Route::post('create','store')->name('store');
+});
