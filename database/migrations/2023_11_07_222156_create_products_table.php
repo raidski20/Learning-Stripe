@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('price', 6, 2);
+
+            $table->enum('currency', array_keys(Product::CURRENCIES_MAP))
+                ->default(Product::US_DOLLAR_CURRENCY);
+
             $table->timestamps();
         });
     }
