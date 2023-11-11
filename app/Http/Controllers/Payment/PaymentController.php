@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Stripe\StripeClient;
@@ -20,19 +21,26 @@ class PaymentController extends Controller
 
     public function checkout(Request $request)
     {
-        $checkout_session = $this->createCheckoutSession($request->product_id);
+        // Getting a random user instead of the authenticated one,
+        // because authentication system is not set up
+        $user = User::where('id', random_int(1, 3))->first();
+
+        $checkout_session = $this->createCheckoutSession($request->product_id, $user);
 
         return redirect($checkout_session->url);
     }
 
-    private function createCheckoutSession(string $stripe_price): \Stripe\Checkout\Session
+    private function createCheckoutSession(string $stripe_price, User $user): \Stripe\Checkout\Session
     {
+        $customerId = $user->resolveStripeCustomerId();
+
         $lineItems = [[
             'price' => $stripe_price,
             'quantity' => 1,
         ]];
 
         return $this->stripe->checkout->sessions->create([
+            'customer' => $customerId,
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => route('stripe.payment.success'),

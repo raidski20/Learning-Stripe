@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\Stripe\CustomerService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'stripe_id'
     ];
 
     /**
@@ -42,4 +44,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function resolveStripeCustomerId(): string
+    {
+        if (is_null($this->stripe_id)) {
+
+            $customer = (new CustomerService())->create($this);
+
+            $this->update(['stripe_customer' => $customer->id]);
+
+            return $customer->id;
+        } else {
+            return $this->stripe_id;
+        }
+    }
 }
