@@ -21,13 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-/*
-Route::get('checkout', [StripeController::class,'overview'])->name('payment.checkout');
-Route::post('checkout', [StripeController::class,'checkout'])->name('payment.checkout');
-Route::get('success', [StripeController::class,'success'])->name('payment.success');
-Route::get('cancel', [StripeController::class,'cancel'])->name('payment.cancel');
-*/
-
 Route::group([
     'prefix' => 'payment',
     'controller' => PaymentController::class ,
