@@ -29,18 +29,9 @@
                             <td>${{ $product->price }}</td>
                     @endswitch
 
-
                     <td>
-                        <form method="POST" action="#"
-                              id="product-form-{{ $loop->iteration }}"
-                              class="d-none"
-                        >
-                            @csrf
-                            <input type="hidden" name="product" value="{{ $product->id }}">
-                        </form>
-
                         <button class="btn btn-primary"
-                                onclick="document.getElementById('product-form-{{ $loop->iteration }}').submit()"
+                                onclick="checkout('{{ $product->stripe_price }}')"
                         >
                             Subscribe
                         </button>
@@ -49,9 +40,24 @@
             @endforeach
         </tbody>
     </table>
+
+    <form method="POST" action="{{ route('stripe.payment.checkout') }}"
+          id="product_form"
+          class="d-none"
+    >
+        @csrf
+        <input type="hidden" id="product_id" name="product_id" value="">
+    </form>
 @endsection
 
 @section('js')
+    <script>
+        function checkout(id)
+        {
+            document.getElementById('product_id').value = id;
+            document.getElementById('product_form').submit();
+        }
+    </script>
 @endsection
 
 
