@@ -3,17 +3,12 @@
 namespace App\Services\Stripe;
 
 use App\Models\User;
-use Stripe\StripeClient;
 
-class CustomerService
+class CustomerService extends BaseStripeService
 {
-    private string $stripSK;
-    private StripeClient $stripe;
-
     public function __construct()
     {
-        $this->stripSK = env('STRIPE_SECRET');
-        $this->stripe = new StripeClient($this->stripSK);
+        parent::__construct();
     }
 
     public function create(User $user): \Stripe\Customer

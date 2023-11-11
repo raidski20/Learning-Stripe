@@ -2,17 +2,11 @@
 
 namespace App\Services\Stripe;
 
-use Stripe\StripeClient;
-
-class ProductService
+class ProductService extends BaseStripeService
 {
-    private string $stripSK;
-    private StripeClient $stripe;
-
     public function __construct()
     {
-        $this->stripSK = env('STRIPE_SECRET');
-        $this->stripe = new StripeClient($this->stripSK);
+        parent::__construct();
     }
 
     public function create(array $productData): \Stripe\Price

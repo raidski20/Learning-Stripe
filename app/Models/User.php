@@ -52,7 +52,7 @@ class User extends Authenticatable
 
             $customer = (new CustomerService())->create($this);
 
-            $this->update(['stripe_customer' => $customer->id]);
+            $this->update(['stripe_id' => $customer->id]);
 
             return $customer->id;
         } else {
